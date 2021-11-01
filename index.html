@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO LIST</title>
+
+    <link rel="icon" href="https://www.hexschool.com/favicon.ico" />
+    
+    <meta name="description" content="JavaScript 必修篇 - 前端修練全攻略 - TODO LIST" />
+    <meta name="keywords" content="HexSchool, HTML, CSS, RWD, TODO LIST"/>
+    <meta name="author" content="su"/>
+    <meta name="copyright" content="版權歸屬"/>
+    
+    <meta property="og:title" content="TODO LIST"/>
+    <meta property="og:description" content="由 su 所練習的TODO LIST"/>
+    <meta property="og:url" content="https://wc-su.github.io/hexschool_js_basic_demo/"/>
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="img/Bitmap.png" />
+    <meta property="og:image:type" content="png" />
+    <meta property="og:image:width" content="150" />
+    <meta property="og:image:height" content="70" />
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" 
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" 
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="css/all.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TODO LIST</h1>
+        <form action="index.html">
+            <div class="addList layout-white">
+                <input type="text" placeholder="新增代辦事項">
+                <input type="button" value="+">
+            </div>
+            <div class="list layout-white">
+                <ul class="list-menu">
+                    <li class="list-menu-active" data-status="2">全部</li>
+                    <li data-status="0">待完成</li>
+                    <li data-status="1">已完成</li>
+                </ul>
+                <ul class="list-main"></ul>
+                <ul class="list-footer">
+                    <li><span class="uncompleted"></span> 個待完成項目</li>
+                    <li class="delete-completed">清除已完成項目</li>
+                </ul>
+            </div>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="js/all.js"></script>
+</body>
+</html>
