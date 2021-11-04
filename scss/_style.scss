@@ -1,4 +1,5 @@
 body {
+    height: 100vh;
     background-image: linear-gradient(174deg, #FFD370 5%, #FFD370 60%, #FFFFFF 60%, #FFFFFF 100%, #E8E8E8 100%);
     background-repeat: no-repeat;
 }
@@ -22,6 +23,10 @@ h1 {
     letter-spacing: 8.75px;
     text-align: center;
     padding-top: 48px;
+    @include mobile() {
+        // font-size: 42px;
+        letter-spacing: 6.4px;
+    }
 }
 
 .layout-white {
@@ -30,7 +35,7 @@ h1 {
     border-radius: 10px;
 }
 
-.addList {
+.input {
     margin-top: 26px;
     display: flex;
     overflow: hidden;
@@ -54,17 +59,22 @@ h1 {
         border: none;
         font-family: 'Noto Sans TC', sans-serif;
         font-size: 16px;
-        color: #9F9A91;
         letter-spacing: 0.7px;
         padding: 0 24px;
         &:focus {
             outline: none;
         }
+        &::placeholder{
+            color: #9F9A91;
+        }
     }
 }
 
-.list {
+.main {
     margin-top: 8px;
+    &.list-empty {
+        display: none;
+    }
     ul {
         display: flex;
         li {
@@ -76,7 +86,7 @@ h1 {
     }
 }
 
-.list-menu {
+.menu {
     li {
         width: 33.33%;
         color: #9F9A91;
@@ -87,7 +97,7 @@ h1 {
             color: #333333;
             border-color: rgba(51, 51, 51, 0.3);
         }
-        &.list-menu-active {
+        &.menu-active {
             color: #333333;
             font-weight: bold;
             border-color: #333333;
@@ -95,68 +105,109 @@ h1 {
     }
 }
 
-.list-main {
+.list {
     flex-direction: column;
     li {
         display: flex;
         align-items: center;
-        &.list-item-check {
-            .list-item {
-                color: #FFD370;
-            }
+        position: relative;
+        &.checkbox-checked {
             p {
                 text-decoration: line-through;
                 color: rgba(51, 51, 51, 0.3);
             }
+            .checkbox {
+                border-color: transparent;
+                &::after {
+                    opacity: 1;
+                }
+            }
         }
         &:hover {
-            .list-item-delete {
-                visibility: visible;
+            .list-delete {
+                opacity: 1;
             }
         }
         p {
             display: block;
             text-align: left;
-            width: 84%;
+            width: calc(90% - 40px);
             font-size: 16px;
             letter-spacing: 0.7px;
             border-bottom: 1px solid #EFEFEF;
-            padding: 24px 16px 24px 16px;
             user-select: none;
             overflow: hidden;
-            box-sizing: border-box;
-        }
-        .list-item, .list-item-delete {
-            width: 8%;
-        }
-        .list-item {
-            font-size: 20px;
-            margin-left: 24px;
-            @include mobile() {
-                margin-left: 12px;
+            // box-sizing: border-box;
+            position: relative;
+            padding: 24px 5%;
+            &::after {
+                content: "";
+                width: 5%;
+                height: 100%;
+                background: #FFFFFF;
+                position: absolute;
+                right: 0;
+                top: 0;
             }
         }
-        .list-item-delete {
-            font-size: 26px;
-            visibility: Hidden;
-            margin-right: 16px;
+        .checkbox {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #333333;
+            border-radius: 5px;
+            transition: all 0.3s;
+            margin-left: 5%;
+            &::after {
+                opacity: 0;
+                content: "";
+                display: block;
+                width: 10px;
+                height: 100%;
+                border-bottom: 2px solid #FFD370;
+                border-right: 2px solid #FFD370;
+                transform: translate(4px, -3px) rotate(45deg);
+                transition: all 0.3s;
+            }
+        }
+        .list-delete {
+            opacity: 0;
+            width: 20px;
+            height: 20px;
+            transition: all 0.5s ease;
+            position: relative;
+            margin-right: 5%;
+            &::before, &:after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                right: 0;
+                width: 100%;
+                height: 1px;
+                background: #333333;
+            }
+            &::before {
+                transform: rotate(45deg);
+            }
+            &::after {
+                transform: rotate(-45deg);
+            }
             &:hover {
-                color: red;
+                &::before, &::after {
+                    background: red;
+                }
             }
             @include tablet() {
-                visibility: visible;
-            }
-            @include mobile() {
-                margin-right: 8px;
+                opacity: 1;
             }
         }
-        p:hover, .list-item:hover, .list-item-delete:hover {
+        p:hover, .checkbox:hover, .list-delete:hover {
             cursor: pointer;
         }
     }
 }
 
-.list-footer {
+.footer {
     justify-content: space-between;
     li {
         padding: 32px 0;

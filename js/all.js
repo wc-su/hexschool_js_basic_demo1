@@ -1,21 +1,13 @@
 $(document).ready(function () {
-    let data = [
-        {
-            value: "已完成代辦事項", status: 1
-        },
-        {
-            value: "未完成代辦事項", status: 0
-        }
-    ];
+    let data = [];
 
-    const list = $(".list-main");
-    const uncompleted = $(".uncompleted");
+    const list = $(".list");
+    const uncompletedNum = $(".num-uncompleted");
     // 畫面暫存狀態：0 - 待完成 / 1 - 已完成 / 2 - 全部
     let statusNow = 2;
 
     // 顯示 list 內容
     function displayList(status) {
-        let uncompletedCNT = 0;
         // 畫面表單清空
         list.empty();
         $.each(data, function (index, object) {
@@ -24,55 +16,78 @@ $(document).ready(function () {
             }
             let element;
             if(object.status == 0) {
-                uncompletedCNT++;
-                element = `<li data-num=${index}><i class="far fa-square list-item"></i>`;
+                element = `<li data-num=${index}><div class="checkbox"></div>`;
             } else {
-                element = `<li data-num=${index} class="list-item-check"><i class="fas fa-check list-item"></i>`;
+                element = `<li data-num=${index} class="checkbox-checked"><div class="checkbox"></div>`;
             }
-            element += `<p>${object.value}</p><i class="fas fa-times list-item-delete"></i></li>`;
+            element += `<p>${object.value}</p><div class="list-delete"></div></li>`;
             list.append(element);
         });
-        // 更新待完成筆數
-        uncompleted.text(uncompletedCNT);
     }
-    function changeItemStatus(checkbox, listItem) {
-        // 修改 事項明細 效果
-        listItem.toggleClass("list-item-check");
-        // 修改 checkbox 圖示
-        checkbox.toggleClass("far").toggleClass("fa-square");
-        checkbox.toggleClass("fas").toggleClass("fa-check");
+
+    function changeItemStatus(listItem) {
+        // 修改項目顯示效果
+        listItem.toggleClass("checkbox-checked");
         // 更新暫存 list
         let num = listItem.attr('data-num');
-        data[num].status = listItem.hasClass("list-item-check") ? 1 : 0;
+        data[num].status = listItem.hasClass("checkbox-checked") ? 1 : 0;
     }
-    displayList(statusNow);
 
-    $(".list-menu").on('click', function (e) {
-        $(".list-menu").children().removeClass("list-menu-active");
-        $(e.target).toggleClass("list-menu-active");
+    function uncompletedCNT(way, element) {
+        switch(way) {
+            case "add":
+                uncompletedNum.text(parseInt(uncompletedNum.text()) + 1);
+                break;
+            case "change":
+                if($(element).hasClass("checkbox-checked")) {
+                    uncompletedNum.text(parseInt(uncompletedNum.text()) + 1);
+                } else {
+                    uncompletedNum.text(parseInt(uncompletedNum.text()) - 1);
+                }
+                break;
+            case "delete":
+                if(!$(element).hasClass("checkbox-checked")) {
+                    uncompletedNum.text(parseInt(uncompletedNum.text()) - 1);
+                }
+                break;
+        }
+    }
+
+    $(".menu").on('click', function (e) {
+        // 移除 menu 效果
+        $(".menu").children().removeClass("menu-active");
+        // 選中 menu 加上效果
+        $(e.target).toggleClass("menu-active");
         // 更新暫存狀態
         statusNow = $(e.target).attr("data-status");
         // 更新畫面表單
         displayList(statusNow);
     });
 
-    $(".list-main").on('click', function (e) {
+    $(list).on('click', function (e) {
         if(e.target.nodeName === "P") {
-            changeItemStatus($(e.target).parent().find('.list-item'), $(e.target).parent());
-        } else if(e.target.nodeName === "I") {
-            if($(e.target).hasClass("list-item")) {
-                changeItemStatus($(e.target), $(e.target).parent());
-            } else if ($(e.target).hasClass("list-item-delete")) { // 刪除單筆
+            uncompletedCNT("change", $(e.target).parent());
+            changeItemStatus($(e.target).parent());
+        } else if(e.target.nodeName === "DIV") {
+            if($(e.target).hasClass("checkbox")) {
+                uncompletedCNT("change", $(e.target).parent());
+                changeItemStatus($(e.target).parent());
+            } else {
+                uncompletedCNT("delete", $(e.target).parent());
+                // 刪除單筆
                 let num = $(e.target).parent().attr('data-num');
                 data.splice(num, 1);
+                if(data.length == 0) {
+                    $(".main").addClass("list-empty");
+                }
             }
         }
         // 更新畫面表單
         displayList(statusNow);
     });
 
-    $(".addList input[type='button']").on('click', function (e) {
-        let input = $(".addList input[type='text']");
+    $(".input input[type='button']").on('click', function (e) {
+        let input = $(".input input[type='text']");
         if(input.val().trim() != "") {
             // 更新暫存 list
             const obj = {};
@@ -80,21 +95,34 @@ $(document).ready(function () {
             obj.status = "0";
             data.push(obj);
             // 寫入畫面
-            let element = `<li  data-num=${data.length - 1}><i class="far fa-square list-item"></i>`;
-            element += `<p>${input.val()}</p>`;
-            element += `<i class="fas fa-times list-item-delete"></i></li>`;
-            list.append(element);
+            if($(".menu-active").attr("data-status") != "1"){
+                let element = `<li data-num=${data.length - 1}><div class="checkbox"></div><p>${input.val()}</p><div class="list-delete"></div></li>`;
+                list.append(element);
+            }
+            uncompletedCNT("add");
             // 清空
             input.val("");
+        }
+        if(data.length == 1){
+            $(".main").removeClass("list-empty");
         }
     });
 
     $(".delete-completed").on('click', function (e) {
-        // 篩選出未完成
-        let filter = data.filter((item) => item.status == 0);
-        // 更新表單
-        data = filter;
+        // 篩選出未完成項目
+        data = data.filter((item) => item.status == 0);
         // 更新畫面表單
         displayList(statusNow);
+        if(data.length == 0) {
+            $(".main").addClass("list-empty");
+        }
+    });
+
+    $(document).on('keypress',function(e) {
+        if(e.which == 13) { // enter
+            if($(".input input[type='text']").is(":focus")) {
+                $(".input input[type='button']").click();
+            }
+        }
     });
 });
